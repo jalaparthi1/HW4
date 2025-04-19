@@ -18,7 +18,9 @@ class MessageBoardApp extends StatelessWidget {
       title: 'Message Board',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 60, 78, 182),
+        ),
         useMaterial3: true,
         textTheme: const TextTheme(
           titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -39,7 +41,9 @@ class AuthGate extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (_, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
         return snapshot.hasData ? const HomeScreen() : const SignInScreen();
       },
@@ -88,9 +92,9 @@ class _LoginFormState extends State<LoginForm> {
         password: _pass.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Error')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? 'Error')));
     } finally {
       setState(() => _loading = false);
     }
@@ -115,15 +119,23 @@ class _LoginFormState extends State<LoginForm> {
           width: double.infinity,
           child: FilledButton.tonalIcon(
             icon: const Icon(Icons.login),
-            label: _loading
-                ? const SizedBox(
-                    height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Text('Sign In'),
+            label:
+                _loading
+                    ? const SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : const Text('Sign In'),
             onPressed: _loading ? null : _doLogin,
           ),
         ),
         TextButton(
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen())),
+          onPressed:
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const RegisterScreen()),
+              ),
           child: const Text('Create an account'),
         ),
       ],
@@ -151,17 +163,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: _email.text.trim(),
         password: _pass.text.trim(),
       );
-      await FirebaseFirestore.instance.collection('users').doc(cred.user!.uid).set({
-        'firstName': _first.text.trim(),
-        'lastName': _last.text.trim(),
-        'email': _email.text.trim(),
-        'joinedAt': DateTime.now(),
-      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(cred.user!.uid)
+          .set({
+            'firstName': _first.text.trim(),
+            'lastName': _last.text.trim(),
+            'email': _email.text.trim(),
+            'joinedAt': DateTime.now(),
+          });
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Error')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? 'Error')));
     } finally {
       setState(() => _loading = false);
     }
@@ -176,11 +191,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              TextField(controller: _first, decoration: const InputDecoration(labelText: 'First Name')),
+              TextField(
+                controller: _first,
+                decoration: const InputDecoration(labelText: 'First Name'),
+              ),
               const SizedBox(height: 16),
-              TextField(controller: _last, decoration: const InputDecoration(labelText: 'Last Name')),
+              TextField(
+                controller: _last,
+                decoration: const InputDecoration(labelText: 'Last Name'),
+              ),
               const SizedBox(height: 16),
-              TextField(controller: _email, decoration: const InputDecoration(labelText: 'Email')),
+              TextField(
+                controller: _email,
+                decoration: const InputDecoration(labelText: 'Email'),
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: _pass,
@@ -192,10 +216,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 width: double.infinity,
                 child: FilledButton.tonalIcon(
                   icon: const Icon(Icons.app_registration),
-                  label: _loading
-                      ? const SizedBox(
-                          height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text('Register'),
+                  label:
+                      _loading
+                          ? const SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text('Register'),
                   onPressed: _loading ? null : _doRegister,
                 ),
               ),
@@ -260,12 +288,20 @@ class BoardsPage extends StatelessWidget {
           itemBuilder: (_, i) {
             final b = _boards[i];
             return Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               elevation: 4,
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 leading: Icon(b['icon'] as IconData, size: 32),
-                title: Text(b['name'] as String, style: Theme.of(context).textTheme.titleLarge),
+                title: Text(
+                  b['name'] as String,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(
@@ -290,12 +326,13 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final msgs = FirebaseFirestore.instance
-        .collection('boards')
-        .doc(board)
-        .collection('messages')
-        .orderBy('time', descending: false)
-        .snapshots();
+    final msgs =
+        FirebaseFirestore.instance
+            .collection('boards')
+            .doc(board)
+            .collection('messages')
+            .orderBy('time', descending: false)
+            .snapshots();
 
     return Scaffold(
       appBar: AppBar(title: Text(board)),
@@ -305,7 +342,8 @@ class ChatScreen extends StatelessWidget {
             child: StreamBuilder<QuerySnapshot>(
               stream: msgs,
               builder: (_, snap) {
-                if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+                if (!snap.hasData)
+                  return const Center(child: CircularProgressIndicator());
                 final docs = snap.data!.docs;
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -313,19 +351,27 @@ class ChatScreen extends StatelessWidget {
                   itemBuilder: (_, i) {
                     final d = docs[i];
                     return Align(
-                      alignment: d['uid'] == FirebaseAuth.instance.currentUser?.uid
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
+                      alignment:
+                          d['uid'] == FirebaseAuth.instance.currentUser?.uid
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 4),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
-                          color: d['uid'] == FirebaseAuth.instance.currentUser?.uid
-                              ? Colors.indigo.shade200
-                              : Colors.grey.shade200,
+                          color:
+                              d['uid'] == FirebaseAuth.instance.currentUser?.uid
+                                  ? Colors.indigo.shade200
+                                  : Colors.grey.shade200,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(d['text'], style: const TextStyle(fontSize: 16)),
+                        child: Text(
+                          d['text'],
+                          style: const TextStyle(fontSize: 16),
+                        ),
                       ),
                     );
                   },
@@ -333,7 +379,7 @@ class ChatScreen extends StatelessWidget {
               },
             ),
           ),
-          const MessageInputField(board: '')
+          const MessageInputField(board: ''),
         ],
       ),
     );
@@ -359,10 +405,10 @@ class _MessageInputFieldState extends State<MessageInputField> {
         .doc(widget.board)
         .collection('messages')
         .add({
-      'text': _ctrl.text.trim(),
-      'time': Timestamp.now(),
-      'uid': FirebaseAuth.instance.currentUser!.uid,
-    });
+          'text': _ctrl.text.trim(),
+          'time': Timestamp.now(),
+          'uid': FirebaseAuth.instance.currentUser!.uid,
+        });
     _ctrl.clear();
     setState(() => _sending = false);
   }
@@ -380,11 +426,16 @@ class _MessageInputFieldState extends State<MessageInputField> {
             Expanded(
               child: TextField(
                 controller: _ctrl,
-                decoration: const InputDecoration.collapsed(hintText: 'Type a message'),
+                decoration: const InputDecoration.collapsed(
+                  hintText: 'Type a message',
+                ),
               ),
             ),
             IconButton(
-              icon: _sending ? const CircularProgressIndicator() : const Icon(Icons.send),
+              icon:
+                  _sending
+                      ? const CircularProgressIndicator()
+                      : const Icon(Icons.send),
               onPressed: _sending ? null : _send,
             ),
           ],
@@ -407,7 +458,10 @@ class ProfilePage extends StatelessWidget {
     return FutureBuilder<DocumentSnapshot>(
       future: _load(),
       builder: (_, snap) {
-        if (!snap.hasData) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        if (!snap.hasData)
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         final data = snap.data!.data() as Map<String, dynamic>;
         return Scaffold(
           appBar: AppBar(title: const Text('Profile')),
@@ -416,13 +470,20 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${data['firstName']} ${data['lastName']}',
-                    style: Theme.of(context).textTheme.titleLarge),
+                Text(
+                  '${data['firstName']} ${data['lastName']}',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
                 const SizedBox(height: 8),
-                Text(data['email'], style: Theme.of(context).textTheme.bodyMedium),
+                Text(
+                  data['email'],
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
                 const SizedBox(height: 4),
-                Text('Joined: ${data['joinedAt'].toDate().toLocal()}',
-                    style: Theme.of(context).textTheme.bodyMedium),
+                Text(
+                  'Joined: ${data['joinedAt'].toDate().toLocal()}',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ],
             ),
           ),
